@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
-using QRCoder;
 
 namespace dcbadge.Controllers
 {
@@ -13,7 +12,16 @@ namespace dcbadge.Controllers
         public IActionResult Index()
         {
 
+            ViewBag.isSet = Request.Cookies["isSet"];
 
+            if(ViewBag.isSet == "true")
+            {
+                ViewData["Message"] = "true";
+            }
+            else
+            {
+                ViewData["Message"] = "false";
+            }
 
             return View();
         }
@@ -23,24 +31,15 @@ namespace dcbadge.Controllers
             string thetext = "Testing the QR Code";
             ViewData["Message"] = thetext;
 
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(thetext, QRCodeGenerator.ECCLevel.Q);
-            BitmapByteQRCode qrCode = new BitmapByteQRCode(qrCodeData);
-            byte[] qrCodeImage = qrCode.GetGraphic(20);
 
-            string base64txt = Convert.ToBase64String(qrCodeImage);
-
-            string mailstring = "<b>Testing</b> again </br> <p><img alt=\"Embedded Image\" src=\"data: image / png; base64," + base64txt + "\" /></p>";
-
-            Helpers.Mailer mailer = new Helpers.Mailer();
-            
-            mailer.SendEmailAsync("jake@woofy.io", "This is a test2", mailstring);
-
-
-
-
+            Helpers.QRGen qrcode64 = new Helpers.QRGen();
+            string base64txt = qrcode64.genQRCode64(thetext);
 
             ViewData["Image"] = base64txt;
+
+            string mailstring = "<b>Testing</b> again </br> <p></p>";
+            Helpers.Mailer mailer = new Helpers.Mailer();
+            mailer.SendEmailAsync("jake@woofy.io", "This is a test2", mailstring);
 
             return View();
         }
@@ -48,6 +47,8 @@ namespace dcbadge.Controllers
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
+
+            Response.Cookies.Append("isSet", "true");
 
             return View();
         }
@@ -80,6 +81,19 @@ namespace dcbadge.Controllers
         public IActionResult Error()
         {
             return View();
+        }
+
+        public IActionResult img(string qrtext)
+        {
+
+            if(qrtext == null)
+            {
+                qrtext = "blank";
+            }
+
+            Helpers.QRGen qrcode64 = new Helpers.QRGen();
+            byte[] qrcode = qrcode64.genQRCodeByte(qrtext);
+            return File(qrcode, "image/png");
         }
     }
 }
