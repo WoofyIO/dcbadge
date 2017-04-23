@@ -20,7 +20,13 @@ namespace dcbadge.Helpers
             emailMessage.From.Add(new MailboxAddress("Jake Visser", "jake@woofy.io"));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart("text/html") { Text = message };
+
+            var builder = new BodyBuilder();
+
+            builder.HtmlBody = string.Format(message);
+
+            emailMessage.Body = builder.ToMessageBody();
+            //emailMessage.Body = new TextPart("plain") { Text = message };
 
             using (var client = new SmtpClient())
             {
