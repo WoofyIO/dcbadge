@@ -30,7 +30,7 @@ namespace dcbadge.Controllers
 
             string base64txt = Convert.ToBase64String(qrCodeImage);
 
-            string mailstring = "<b>Testing</b> again";
+            string mailstring = "<b>Testing</b> again </br> <p><img alt=\"Embedded Image\" src=\"data: image / png; base64," + base64txt + "\" /></p>";
 
             Helpers.Mailer mailer = new Helpers.Mailer();
             
