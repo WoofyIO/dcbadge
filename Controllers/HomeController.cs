@@ -33,7 +33,7 @@ namespace dcbadge.Controllers
             string mailstring = "<b>Testing</b> again";
 
             Helpers.Mailer mailer = new Helpers.Mailer();
-            S
+            
             mailer.SendEmailAsync("jake@woofy.io", "This is a test2", mailstring);
 
 
