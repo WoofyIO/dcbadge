@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
+using QRCoder;
 
 namespace dcbadge.Controllers
 {
@@ -11,12 +12,25 @@ namespace dcbadge.Controllers
     {
         public IActionResult Index()
         {
+
+
+
             return View();
         }
 
-        public IActionResult About()
+        public IActionResult qrtest()
         {
-            ViewData["Message"] = "Your application description page.";
+            string thetext = "Testing the QR Code";
+            ViewData["Message"] = thetext;
+
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(thetext, QRCodeGenerator.ECCLevel.Q);
+            BitmapByteQRCode qrCode = new BitmapByteQRCode(qrCodeData);
+            byte[] qrCodeImage = qrCode.GetGraphic(20);
+
+            string base64txt = Convert.ToBase64String(qrCodeImage);
+
+            ViewData["Image"] = base64txt;
 
             return View();
         }
