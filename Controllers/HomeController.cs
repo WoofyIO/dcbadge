@@ -42,10 +42,13 @@ namespace dcbadge.Controllers
             var charge = charges.Create(new StripeChargeCreateOptions
             {
                 Amount = 500,
-                Description = "Sample Charge",
+                Description = "QC-DCBadgeOrder",
                 Currency = "usd",
                 CustomerId = customer.Id
+ 
             });
+
+            ViewData["Message"] = "CustomerID: " + customer.Id + " Email: " + stripeEmail + " ChargeID: " + charge.Id + " " + charge.Amount/100 + " " + charge.Status;
 
             return View();
         }
