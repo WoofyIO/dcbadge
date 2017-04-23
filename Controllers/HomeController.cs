@@ -31,7 +31,7 @@ namespace dcbadge.Controllers
             string base64txt = Convert.ToBase64String(qrCodeImage);
             Helpers.Mailer mailer = new Helpers.Mailer();
 
-            mailer.SendEmailAsync("jake@woofy.io", "This is a test", "This is a test");
+            mailer.SendEmailAsync("jake@woofy.io", "This is a test2", "This is a test2");
 
 
 

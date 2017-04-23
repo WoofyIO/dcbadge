@@ -13,7 +13,7 @@ namespace dcbadge.Helpers
     {
         
 
-        public void SendEmailAsync(string email, string subject, string message)
+        public async void SendEmailAsync(string email, string subject, string message)
         {
             var emailMessage = new MimeMessage();
 
@@ -31,7 +31,7 @@ namespace dcbadge.Helpers
 
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                client.Connect("smtp.woofy.io", 25, false);
+                await client.ConnectAsync("smtp.woofy.io", 25, false);
 
                 // Note: since we don't have an OAuth2 token, disable
                 // the XOAUTH2 authentication mechanism.
@@ -40,8 +40,8 @@ namespace dcbadge.Helpers
                 // Note: only needed if the SMTP server requires authentication
                 //client.Authenticate("test", "password");
 
-                client.Send(emailMessage);
-                client.Disconnect(true);
+                await client.SendAsync(emailMessage);
+                await client.DisconnectAsync(true);
             }
         }
     }
