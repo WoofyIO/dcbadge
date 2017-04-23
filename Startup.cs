@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Stripe;
 
 namespace dcbadge
 {
@@ -28,12 +29,14 @@ namespace dcbadge
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -57,4 +60,20 @@ namespace dcbadge
             });
         }
     }
+
+    public class StripeSettings
+    {
+        public string SecretKey { get; set; }
+        public string PublishableKey { get; set; }
+    }
+
+
+
+
+
+
+
+
+
+
 }

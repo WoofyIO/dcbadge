@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.0" />
     <PackageReference Include="Stripe.net" Version="8.1.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\lib\" />
+  </ItemGroup>
 </Project>
