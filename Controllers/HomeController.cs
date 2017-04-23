@@ -29,9 +29,12 @@ namespace dcbadge.Controllers
             byte[] qrCodeImage = qrCode.GetGraphic(20);
 
             string base64txt = Convert.ToBase64String(qrCodeImage);
-            Helpers.Mailer mailer = new Helpers.Mailer();
 
-            mailer.SendEmailAsync("jake@woofy.io", "This is a test2", "This is a test2");
+            string mailstring = "<b>Testing</b> again";
+
+            Helpers.Mailer mailer = new Helpers.Mailer();
+            S
+            mailer.SendEmailAsync("jake@woofy.io", "This is a test2", mailstring);
 
 
 
