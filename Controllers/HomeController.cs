@@ -12,15 +12,27 @@ namespace dcbadge.Controllers
         public IActionResult Index()
         {
 
-            ViewBag.isSet = Request.Cookies["isSet"];
+            ViewBag.RequestCode = Request.Cookies["RequestCode"];
 
-            if(ViewBag.isSet == "true")
+            if(!string.IsNullOrEmpty(ViewBag.RequestCode))
             {
-                ViewData["Message"] = "true";
+                ViewData["RequestCode"] = ViewBag.RequestCode;
             }
             else
             {
-                ViewData["Message"] = "false";
+                ViewData["RequestCode"] = "";
+            }
+
+            return View();
+        }
+
+        public IActionResult Validate(string RequestCode)
+        {
+            Response.Cookies.Append("RequestCode", RequestCode);
+
+            if(!string.IsNullOrEmpty(RequestCode))
+            {
+                ViewData["Message"] = RequestCode;
             }
 
             return View();

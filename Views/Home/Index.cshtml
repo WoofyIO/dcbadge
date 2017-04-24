@@ -1,9 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Start";
 }
 
 
 <p>@ViewData["Message"]</p>
 
 
-Enter code
+<form action="/Home/Validate">
+    Your Request Code:<br>
+    <input type="text" name="requestcode" value="@ViewData["RequestCode"]"><br>
+    <input type="submit" value="Submit">
+</form> 
