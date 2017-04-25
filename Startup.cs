@@ -9,10 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Stripe;
 
+
+
 namespace dcbadge
 {
     public class Startup
     {
+        protected internal static string dbuser;
+        protected internal static string dbpass;
+        protected internal static string dburi;
+        protected internal static string dbtable;
+        protected internal static string dbname;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -43,6 +51,13 @@ namespace dcbadge
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
+
+            dbuser = Configuration.GetSection("db")["dbuser"];
+            dbpass = Configuration.GetSection("db")["dbpass"];
+            dburi = Configuration.GetSection("db")["dburi"];
+            dbtable = Configuration.GetSection("db")["dbtable"];
+            dbname = Configuration.GetSection("db")["dbname"];
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 

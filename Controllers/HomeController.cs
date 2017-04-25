@@ -12,6 +12,8 @@ namespace dcbadge.Controllers
         public IActionResult Index()
         {
 
+            ViewData["Message"] = "";
+
             ViewBag.RequestCode = Request.Cookies["RequestCode"];
 
             if(!string.IsNullOrEmpty(ViewBag.RequestCode))
@@ -28,11 +30,22 @@ namespace dcbadge.Controllers
 
         public IActionResult Validate(string RequestCode)
         {
-            Response.Cookies.Append("RequestCode", RequestCode);
-
+            Helpers.Sql sql = new Helpers.Sql();
+            
             if(!string.IsNullOrEmpty(RequestCode))
             {
-                ViewData["Message"] = RequestCode;
+                Response.Cookies.Append("RequestCode", RequestCode);
+
+                if (sql.verifyCode(RequestCode) == 1)
+                {
+                    ViewData["Message"] = "Your code is good - lets pay";
+                }
+                else
+                {
+                    ViewData["Message"] = "";
+                    ViewData["Back"] = 1;
+                }
+                
             }
 
             return View();

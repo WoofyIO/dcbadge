@@ -12,14 +12,18 @@ namespace dcbadge.Helpers
 {
     public class Sql
     {
-        private static string DataSource = "";
-        private static string UserID = "";
-        private static string Password = "";
-        private static string db = "";
 
-        static void sqlq()
+        private static string DataSource = Startup.dburi;
+        private static string UserID = Startup.dbuser;
+        private static string Password = Startup.dbpass;
+        private static string db = Startup.dbname;
+        private static string table = Startup.dbtable;
+
+        public int verifyCode(String code)
         {
-            try
+            int rtnvalue = 0;
+
+            try  
             {
                 SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
                 builder.DataSource = DataSource;
@@ -29,15 +33,11 @@ namespace dcbadge.Helpers
 
                 using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
                 {
-                    Console.WriteLine("\nQuery data example:");
-                    Console.WriteLine("=========================================\n");
-
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
-                    sb.Append("SELECT TOP 20 pc.Name as CategoryName, p.name as ProductName ");
-                    sb.Append("FROM [SalesLT].[ProductCategory] pc ");
-                    sb.Append("JOIN [SalesLT].[Product] p ");
-                    sb.Append("ON pc.productcategoryid = p.productcategoryid;");
+                    sb.Append("SELECT COUNT ([ID])");
+                    sb.Append("FROM " + table);
+                    sb.Append("WHERE [requestcode] = '" + code + "';");
                     String sql = sb.ToString();
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
@@ -46,7 +46,7 @@ namespace dcbadge.Helpers
                         {
                             while (reader.Read())
                             {
-                                Console.WriteLine("{0} {1}", reader.GetString(0), reader.GetString(1));
+                                rtnvalue = Convert.ToInt32(reader[0].ToString());
                             }
                         }
                     }
@@ -56,7 +56,12 @@ namespace dcbadge.Helpers
             {
                 Console.WriteLine(e.ToString());
             }
+
+            return rtnvalue;
+
         }
+
+
 
 
     }

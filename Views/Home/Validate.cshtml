@@ -1,8 +1,24 @@
 ﻿@{
     ViewData["Title"] = "Validate";
+    bool showback = Convert.ToBoolean(ViewData["Back"]);
+}
+
+@if (showback == true)
+{
+
+    <p><a href="../..">Back you go</a></p>
+
+}
+else
+{ 
+
+
+    <p>Your good</p>
+
+
 }
 
 
-@ViewData["Message"]
 
-
+@{
+}
