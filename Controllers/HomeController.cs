@@ -38,6 +38,12 @@ namespace dcbadge.Controllers
             return View();
         }
 
+        public IActionResult Pay()
+        {
+
+            return View();
+        }
+
         public IActionResult qrtest()
         {
             string thetext = "Testing the QR Code";
