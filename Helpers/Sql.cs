@@ -17,7 +17,7 @@ namespace dcbadge.Helpers
         private static string Password = "";
         private static string db = "";
 
-        static void Main(string[] args)
+        static void sqlq()
         {
             try
             {
