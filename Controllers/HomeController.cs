@@ -78,7 +78,8 @@ namespace dcbadge.Controllers
         public IActionResult Pay(int BadgeNumber)
         {
 
-            ViewData["TotalPrice"] = BadgeNumber * 270;
+            ViewData["TotalPrice"] = "";
+            ViewData["BadgeNumber"] = "";
 
             Helpers.Sql sql = new Helpers.Sql();
 
@@ -94,7 +95,9 @@ namespace dcbadge.Controllers
             {
                 if (sql.verifyCode(RequestCode) == 1)
                 {
-                    sql.updatePrice(RequestCode, (BadgeNumber * 270));
+                    sql.updatePrice(RequestCode, BadgeNumber, (BadgeNumber * 270 * 100));
+                    ViewData["TotalPrice"] = (sql.getPrice(RequestCode) / 100);
+                    ViewData["BadgeNumber"] = BadgeNumber;
                     ViewData["ShowPay"] = 1;
                     ViewData["Back"] = 0;
                 }

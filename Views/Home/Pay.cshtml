@@ -22,7 +22,8 @@
     <p>Please click "Pay with Card" to complete the checkout using Stripe</p>
 <form action="/Home/Complete" method="POST">
     <article>
-        <label>Amount: $@totalprice <br /></label>
+        <label>Amount: $@totalprice <br />
+        Number of Badges: @ViewData["BadgeNumber"] <br /></label>
     </article>
     <script src="https://checkout.stripe.com/v2/checkout.js"
             class="stripe-button"

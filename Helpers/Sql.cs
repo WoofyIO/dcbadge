@@ -195,7 +195,7 @@ namespace dcbadge.Helpers
 
         }
 
-        public void updatePrice(String code, int price)
+        public void updatePrice(String code, int qantity, int price)
         {
 
             try
@@ -210,7 +210,7 @@ namespace dcbadge.Helpers
                 {
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
-                    sb.Append("UPDATE " + table + " SET Price = " + price + " WHERE [requestcode] = " + code + ";");
+                    sb.Append("UPDATE " + table + " SET Price = '" + price + "', Qantity = '" + qantity + "' WHERE [requestcode] = '" + code + "';");
                     String sql = sb.ToString();
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
