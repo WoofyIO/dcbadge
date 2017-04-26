@@ -40,7 +40,7 @@ namespace dcbadge.Controllers
             {
                 Response.Cookies.Append("RequestCode", RequestCode);
 
-                if (sql.verifyCode(RequestCode) == 1)
+                if (sql.verifyCode(RequestCode) == true)
                 {
 
                     if(sql.codeUsed(RequestCode) == false)
@@ -93,7 +93,7 @@ namespace dcbadge.Controllers
 
             if (!string.IsNullOrEmpty(RequestCode) && (BadgeNumber > 0) && ( BadgeNumber <= sql.maxBadges(RequestCode)))
             {
-                if (sql.verifyCode(RequestCode) == 1)
+                if (sql.verifyCode(RequestCode) == true)
                 {
                     sql.updatePrice(RequestCode, BadgeNumber, (BadgeNumber * 270 * 100));
                     ViewData["TotalPrice"] = (sql.getPrice(RequestCode) / 100);
