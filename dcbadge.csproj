@@ -44,7 +44,4 @@
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Views\Home\Charge.cshtml" />
-  </ItemGroup>
 </Project>
