@@ -1,26 +1,14 @@
 USE [dcbadge]
 GO
 
+WHILE (SELECT COUNT(ID) FROM Codesdev) < 50 
+BEGIN  
 INSERT INTO [dbo].[Codesdev]
            ([requestcode])
      VALUES
-           ('123456789')
-GO
+           (NEWID()) 
+END  
 
-INSERT INTO [dbo].[Codesdev]
-           ([requestcode])
-     VALUES
-           ('987654321')
-GO
+SELECT requestcode FROM Codesdev
 
-INSERT INTO [dbo].[Codesdev]
-           ([requestcode])
-     VALUES
-           ('147852369')
-GO
-
-INSERT INTO [dbo].[Codesdev]
-           ([requestcode])
-     VALUES
-           ('963258741')
 GO

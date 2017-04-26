@@ -13,20 +13,23 @@ namespace dcbadge.Helpers
     {
         
 
-        public async void SendEmailAsync(string email, string subject, string message)
+        public async void SendEmailAsync(string email, string qrcode, string badgenum)
         {
             var emailMessage = new MimeMessage();
 
             emailMessage.From.Add(new MailboxAddress("Jake Visser", "jake@woofy.io"));
             emailMessage.To.Add(new MailboxAddress("", email));
-            emailMessage.Subject = subject;
+            emailMessage.Subject = "Your Queercon Group Buy";
 
             var builder = new BodyBuilder();
+            string message = "<p>Thank you for your purchase of " + badgenum + " badge(s). Stripe should have send you a recipt, and you should have a copy of the QR Code link in your inbox as well.</p>" +
+"<p><b> Treat this code as cash.The first person to collect a badge using it gets to keep it. If you think your code has been stolen contact us from your email address with the relevent details and we will work to reset it </b></p>" +
+"<p>This is your URL: <a href=\"https://dcbadge.queercon.org/home/img?qrtext=" + qrcode + "\"> https://dcbadge.queercon.org/home/img?qrtext=" + qrcode + " </a></p>";
 
             builder.HtmlBody = string.Format(message);
 
             emailMessage.Body = builder.ToMessageBody();
-            //emailMessage.Body = new TextPart("plain") { Text = message };
+
 
             using (var client = new SmtpClient())
             {

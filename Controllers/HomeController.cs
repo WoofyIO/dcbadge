@@ -40,7 +40,7 @@ namespace dcbadge.Controllers
             {
                 Response.Cookies.Append("RequestCode", RequestCode);
 
-                if (sql.verifyCode(RequestCode) == 1)
+                if (sql.verifyCode(RequestCode) == true)
                 {
 
                     if(sql.codeUsed(RequestCode) == false)
@@ -93,7 +93,7 @@ namespace dcbadge.Controllers
 
             if (!string.IsNullOrEmpty(RequestCode) && (BadgeNumber > 0) && ( BadgeNumber <= sql.maxBadges(RequestCode)))
             {
-                if (sql.verifyCode(RequestCode) == 1)
+                if (sql.verifyCode(RequestCode) == true)
                 {
                     sql.updatePrice(RequestCode, BadgeNumber, (BadgeNumber * 270 * 100));
                     ViewData["TotalPrice"] = (sql.getPrice(RequestCode) / 100);
@@ -136,52 +136,75 @@ namespace dcbadge.Controllers
 
         public IActionResult Complete(string stripeEmail, string stripeToken)
         {
+            ViewData["Message"] = "If your seeing this, either you shouldnt be here, or something went wrong. Email us, or try again.";
+            ViewData["Back"] = 1;
+            ViewData["qrcode"] = "";
+            ViewData["ShowEnd"] = 0;
+            ViewData["TransError"] = "";
+            ViewData["Image"] = "";
+            ViewData["badgenum"] = "";
+            ViewData["Email"] = "";
 
-            string chargeid = "";
-            int chargeammount = 0;
-            string chargestatus = "";
-            string customerid = "";
+            string qrcode = "";
 
 
             ViewBag.RequestCode = Request.Cookies["RequestCode"];
             string RequestCode = ViewBag.RequestCode;
 
             Helpers.Sql sql = new Helpers.Sql();
+            Helpers.QRGen qr = new Helpers.QRGen();
+            Helpers.Mailer mail = new Helpers.Mailer();
+
             int price = sql.getPrice(RequestCode);
 
             var customers = new StripeCustomerService();
             var charges = new StripeChargeService();
 
-            try
+            if(!String.IsNullOrEmpty(stripeEmail) && !String.IsNullOrEmpty(stripeToken))
             {
-                var customer = customers.Create(new StripeCustomerCreateOptions
+                try
                 {
-                    Email = stripeEmail,
-                    SourceToken = stripeToken
-                });
+                    var customer = customers.Create(new StripeCustomerCreateOptions
+                    {
+                        Email = stripeEmail,
+                        SourceToken = stripeToken
+                    });
 
-                var charge = charges.Create(new StripeChargeCreateOptions
+                    var charge = charges.Create(new StripeChargeCreateOptions
+                    {
+                        Amount = price,
+                        Description = "QC-DCBadgeOrder",
+                        Currency = "usd",
+                        CustomerId = customer.Id
+
+                    });
+
+
+                   if (String.Compare(charge.Status, "succeeded", true) == 0)
+                    {
+                        ViewData["Back"] = 0;
+                        String guid = Guid.NewGuid().ToString();
+                        qrcode = sql.getID(RequestCode) + ";" + guid;
+                        sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
+                        int badgenum = charge.Amount / 100 / 270;
+                        ViewData["badgenum"] = badgenum;
+                        ViewData["qrcode"] = qrcode;
+                        ViewData["ShowEnd"] = 1;
+                        ViewData["Message"] = "";
+                        ViewData["Image"] = qr.genQRCode64(qrcode);
+                        ViewData["Email"] = stripeEmail;
+                        mail.SendEmailAsync(stripeEmail, qrcode, badgenum.ToString());
+
+                    }
+
+                    
+                }
+                catch (StripeException e)
                 {
-                    Amount = price,
-                    Description = "QC-DCBadgeOrder",
-                    Currency = "usd",
-                    CustomerId = customer.Id
-
-                });
-
-                chargeid = charge.Id;
-                chargeammount = charge.Amount;
-                chargestatus = charge.Status;
-                customerid = customer.Id;
-
+                    ViewData["TransError"] = e.Message;
+                    ViewData["Message"] = "Something went wrong... look at the error message, email us or try again.";
+                }
             }
-            catch (StripeException e)
-            {
-                ViewData["TransError"] = e.Message;
-            }
-
-
-            ViewData["Message"] = "CustomerID: " + customerid + " Email: " + stripeEmail + " ChargeID: " + chargeid + " " + chargeammount/100 + " " + chargestatus;
 
             return View();
         }
@@ -196,7 +219,7 @@ namespace dcbadge.Controllers
 
             if(qrtext == null)
             {
-                qrtext = "blank";
+                qrtext = " ";
             }
 
             Helpers.QRGen qrcode64 = new Helpers.QRGen();

@@ -19,9 +19,9 @@ namespace dcbadge.Helpers
         private static string db = Startup.dbname;
         private static string table = Startup.dbtable;
 
-        public int verifyCode(String code)
+        public bool verifyCode(String code)
         {
-            int rtnvalue = 0;
+            bool rtnvalue = false;
 
             try  
             {
@@ -46,7 +46,8 @@ namespace dcbadge.Helpers
                         {
                             while (reader.Read())
                             {
-                                rtnvalue = Convert.ToInt32(reader[0].ToString());
+                                int i = Convert.ToInt32(reader[0].ToString());
+                                rtnvalue = Convert.ToBoolean(i);
                             }
                         }
                     }
@@ -195,6 +196,48 @@ namespace dcbadge.Helpers
 
         }
 
+        public string getID(String code)
+        {
+            string rtnvalue = "";
+
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = DataSource;
+                builder.UserID = UserID;
+                builder.Password = Password;
+                builder.InitialCatalog = db;
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("SELECT [ID]");
+                    sb.Append("FROM " + table);
+                    sb.Append("WHERE [requestcode] = '" + code + "';");
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rtnvalue = reader[0].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return rtnvalue;
+
+        }
+
         public void updatePrice(String code, int qantity, int price)
         {
 
@@ -211,6 +254,40 @@ namespace dcbadge.Helpers
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
                     sb.Append("UPDATE " + table + " SET Price = '" + price + "', Qantity = '" + qantity + "' WHERE [requestcode] = '" + code + "';");
+                    String sql = sb.ToString();
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+
+
+        }
+
+        public void updateSale(String code, string email, string custcode, string paycode, string qrcode)
+        {
+
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = DataSource;
+                builder.UserID = UserID;
+                builder.Password = Password;
+                builder.InitialCatalog = db;
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("UPDATE " + table + " SET codeused = 1, email = '" + email + "', custcode = '" + custcode + "', paycode = '" + paycode + "', qrcode = '" + qrcode + "', datepayed = CURRENT_TIMESTAMP WHERE [requestcode] = '" + code + "';");
                     String sql = sb.ToString();
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
