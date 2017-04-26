@@ -141,6 +141,9 @@ namespace dcbadge.Controllers
             ViewData["qrcode"] = "";
             ViewData["ShowEnd"] = 0;
             ViewData["TransError"] = "";
+            ViewData["Image"] = "";
+            ViewData["badgenum"] = "";
+            ViewData["Email"] = "";
 
             string qrcode = "";
 
@@ -149,6 +152,9 @@ namespace dcbadge.Controllers
             string RequestCode = ViewBag.RequestCode;
 
             Helpers.Sql sql = new Helpers.Sql();
+            Helpers.QRGen qr = new Helpers.QRGen();
+            Helpers.Mailer mail = new Helpers.Mailer();
+
             int price = sql.getPrice(RequestCode);
 
             var customers = new StripeCustomerService();
@@ -180,9 +186,14 @@ namespace dcbadge.Controllers
                         String guid = Guid.NewGuid().ToString();
                         qrcode = sql.getID(RequestCode) + ";" + guid;
                         sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
+                        int badgenum = charge.Amount / 100 / 270;
+                        ViewData["badgenum"] = badgenum;
                         ViewData["qrcode"] = qrcode;
                         ViewData["ShowEnd"] = 1;
                         ViewData["Message"] = "";
+                        ViewData["Image"] = qr.genQRCode64(qrcode);
+                        ViewData["Email"] = stripeEmail;
+                        mail.SendEmailAsync(stripeEmail, qrcode, badgenum.ToString());
 
                     }
 
@@ -208,7 +219,7 @@ namespace dcbadge.Controllers
 
             if(qrtext == null)
             {
-                qrtext = "blank";
+                qrtext = " ";
             }
 
             Helpers.QRGen qrcode64 = new Helpers.QRGen();
