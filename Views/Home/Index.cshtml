@@ -1,19 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Start";
 }
 
-@using Microsoft.Extensions.Options
-@inject IOptions<StripeSettings> Stripe
 
-<form action="/Home/Charge" method="POST">
-    <article>
-        <label>Amount: $5.00</label>
-    </article>
-    <script src="https://checkout.stripe.com/v2/checkout.js"
-            class="stripe-button"
-            data-key="@Stripe.Value.PublishableKey"
-            data-locale="auto"
-            data-description="Sample Charge"
-            data-amount="500">
-    </script>
-</form>
+<p>@ViewData["Message"]</p>
+
+
+<form action="/Home/Validate" method="post">
+    Your Request Code:<br>
+    <input type="text" name="requestcode" value="@ViewData["RequestCode"]"><br>
+    <input type="submit" value="Submit">
+</form> 

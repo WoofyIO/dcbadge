@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Validate";
+    bool showback = Convert.ToBoolean(ViewData["Back"]);
+    bool showpay = Convert.ToBoolean(ViewData["ShowPay"]);
+    bool showrecover = Convert.ToBoolean(ViewData["ShowRecover"]);
+    int maxbadges = Convert.ToInt32(ViewData["MaxBadges"]);
+}
+
+@ViewData["Message"]
+
+@if (showpay)
+{
+
+    <p>You can purchase up to @ViewData["MaxBadges"] badges. How many would you like? Badges cost $270 each including $10 to cover credit card and withdraw fees</p>
+
+
+        <form action="/Home/Pay" method="post">
+            @for (int i = 1; i <= maxbadges; i++)
+                {<input type="radio" name="BadgeNumber" value="@i" /><b> @i  Badge(s) for a total of $@(i*270)</b> <br />}
+                    <br />
+            <input type="submit" value="Submit">
+        </form>
+
+
+}
+
+@if (showrecover)
+{
+
+
+
+}
+
+@if (showback)
+{
+
+    <p><a href="../..">Back you go</a></p>
+
+}
+
+
+@{
+}
