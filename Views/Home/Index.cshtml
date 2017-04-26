@@ -6,7 +6,7 @@
 <p>@ViewData["Message"]</p>
 
 
-<form action="/Home/Validate">
+<form action="/Home/Validate" method="post">
     Your Request Code:<br>
     <input type="text" name="requestcode" value="@ViewData["RequestCode"]"><br>
     <input type="submit" value="Submit">

@@ -1,25 +1,39 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+
+    ViewData["Title"] = "Pay";
+    bool showback = Convert.ToBoolean(ViewData["Back"]);
+    bool showpay = Convert.ToBoolean(ViewData["ShowPay"]);
+    int totalprice = Convert.ToInt32(ViewData["TotalPrice"]);
+
 }
 
-Pay now
+@if (showback)
+{
+
+    <p><a href="../..">Back you go</a></p>
+
+}
 
 @using Microsoft.Extensions.Options
 @inject IOptions<StripeSettings> Stripe
 
+@if (showpay)
+{
+    <p>Please click "Pay with Card" to complete the checkout using Stripe</p>
 <form action="/Home/Complete" method="POST">
     <article>
-        <label>Amount: $5.00</label>
+        <label>Amount: $@totalprice <br /></label>
     </article>
     <script src="https://checkout.stripe.com/v2/checkout.js"
             class="stripe-button"
             data-key="@Stripe.Value.PublishableKey"
             data-locale="auto"
-            data-description="Sample Charge"
-            data-amount="500">
+            data-name="Queercon, Inc"
+            data-description="QC-DCBadgeOrder"
+            data-zip-code="true"
+            data-amount="@(totalprice*100)">
     </script>
 </form>
-
+    <p>Made a mistake? <a href="../../">Start Over</a> and select the correct amount</p>
+}
 

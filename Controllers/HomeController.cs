@@ -31,18 +31,42 @@ namespace dcbadge.Controllers
         public IActionResult Validate(string RequestCode)
         {
             Helpers.Sql sql = new Helpers.Sql();
-            
-            if(!string.IsNullOrEmpty(RequestCode))
+            ViewData["Message"] = "";
+            ViewData["Back"] = 1;
+            ViewData["ShowPay"] = 0;
+            ViewData["ShowRecover"] = 0;
+
+            if (!string.IsNullOrEmpty(RequestCode))
             {
                 Response.Cookies.Append("RequestCode", RequestCode);
 
                 if (sql.verifyCode(RequestCode) == 1)
                 {
-                    ViewData["Message"] = "Your code is good - lets pay";
+
+                    if(sql.codeUsed(RequestCode) == false)
+                    {
+                        ViewData["Message"] = "Your code is good - lets pay";
+                        ViewData["Back"] = 0;
+                        ViewData["ShowPay"] = 1;
+                        ViewData["MaxBadges"] = sql.maxBadges(RequestCode);
+
+
+                    }
+                    else
+                    {
+
+                        ViewData["Message"] = "Your code is allready used... ";
+                        ViewData["Back"] = 0;
+                        ViewData["ShowRecover"] = 1;
+
+                    }
+
+
                 }
                 else
                 {
-                    ViewData["Message"] = "";
+
+                    ViewData["Message"] = "Invalid Code";
                     ViewData["Back"] = 1;
                 }
                 
@@ -51,10 +75,33 @@ namespace dcbadge.Controllers
             return View();
         }
 
-        public IActionResult Pay()
+        public IActionResult Pay(int BadgeNumber)
         {
 
-            return View();
+            ViewData["TotalPrice"] = BadgeNumber * 270;
+
+            Helpers.Sql sql = new Helpers.Sql();
+
+            ViewData["Message"] = "";
+            ViewData["Back"] = 1;
+            ViewData["ShowPay"] = 0;
+            ViewData["ShowRecover"] = 0;
+
+            ViewBag.RequestCode = Request.Cookies["RequestCode"];
+            string RequestCode = ViewBag.RequestCode;
+
+            if (!string.IsNullOrEmpty(RequestCode) && (BadgeNumber > 0) && ( BadgeNumber <= sql.maxBadges(RequestCode)))
+            {
+                if (sql.verifyCode(RequestCode) == 1)
+                {
+                    sql.updatePrice(RequestCode, (BadgeNumber * 270));
+                    ViewData["ShowPay"] = 1;
+                    ViewData["Back"] = 0;
+                }
+            }
+
+
+                return View();
         }
 
         public IActionResult qrtest()
@@ -84,10 +131,18 @@ namespace dcbadge.Controllers
             return View();
         }
 
-        public IActionResult Charge(string stripeEmail, string stripeToken)
+        public IActionResult Complete(string stripeEmail, string stripeToken)
         {
+
+            ViewBag.RequestCode = Request.Cookies["RequestCode"];
+            string RequestCode = ViewBag.RequestCode;
+
+            Helpers.Sql sql = new Helpers.Sql();
+            int price = sql.getPrice(RequestCode);
+
             var customers = new StripeCustomerService();
             var charges = new StripeChargeService();
+
 
             var customer = customers.Create(new StripeCustomerCreateOptions
             {
@@ -97,7 +152,7 @@ namespace dcbadge.Controllers
 
             var charge = charges.Create(new StripeChargeCreateOptions
             {
-                Amount = 500,
+                Amount = price,
                 Description = "QC-DCBadgeOrder",
                 Currency = "usd",
                 CustomerId = customer.Id
