@@ -78,8 +78,8 @@ namespace dcbadge.Controllers
         public IActionResult Pay(int BadgeNumber)
         {
 
-            ViewData["TotalPrice"] = "";
-            ViewData["BadgeNumber"] = "";
+            ViewData["TotalPrice"] = "0";
+            ViewData["BadgeNumber"] = "0";
 
             Helpers.Sql sql = new Helpers.Sql();
 
@@ -137,6 +137,12 @@ namespace dcbadge.Controllers
         public IActionResult Complete(string stripeEmail, string stripeToken)
         {
 
+            string chargeid = "";
+            int chargeammount = 0;
+            string chargestatus = "";
+            string customerid = "";
+
+
             ViewBag.RequestCode = Request.Cookies["RequestCode"];
             string RequestCode = ViewBag.RequestCode;
 
@@ -146,23 +152,36 @@ namespace dcbadge.Controllers
             var customers = new StripeCustomerService();
             var charges = new StripeChargeService();
 
-
-            var customer = customers.Create(new StripeCustomerCreateOptions
+            try
             {
-                Email = stripeEmail,
-                SourceToken = stripeToken
-            });
+                var customer = customers.Create(new StripeCustomerCreateOptions
+                {
+                    Email = stripeEmail,
+                    SourceToken = stripeToken
+                });
 
-            var charge = charges.Create(new StripeChargeCreateOptions
+                var charge = charges.Create(new StripeChargeCreateOptions
+                {
+                    Amount = price,
+                    Description = "QC-DCBadgeOrder",
+                    Currency = "usd",
+                    CustomerId = customer.Id
+
+                });
+
+                chargeid = charge.Id;
+                chargeammount = charge.Amount;
+                chargestatus = charge.Status;
+                customerid = customer.Id;
+
+            }
+            catch (StripeException e)
             {
-                Amount = price,
-                Description = "QC-DCBadgeOrder",
-                Currency = "usd",
-                CustomerId = customer.Id
- 
-            });
+                ViewData["TransError"] = e.Message;
+            }
 
-            ViewData["Message"] = "CustomerID: " + customer.Id + " Email: " + stripeEmail + " ChargeID: " + charge.Id + " " + charge.Amount/100 + " " + charge.Status;
+
+            ViewData["Message"] = "CustomerID: " + customerid + " Email: " + stripeEmail + " ChargeID: " + chargeid + " " + chargeammount/100 + " " + chargestatus;
 
             return View();
         }
