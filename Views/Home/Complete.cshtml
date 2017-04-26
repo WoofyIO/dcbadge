@@ -1,8 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "Paid";
-}
 
+    ViewData["Title"] = "Complete";
+    bool showback = Convert.ToBoolean(ViewData["Back"]);
+    bool showend = Convert.ToBoolean(ViewData["ShowEnd"]);
+    string qrcode = ViewData["qrcode"].ToString();
+    bool transerror = false;
+
+    if(!String.IsNullOrEmpty(ViewData["TransError"].ToString()))
+    {
+
+        transerror = true;
+
+    }
+
+
+}
 
 @ViewData["Message"]
 
-@ViewData["TransError"]
+@if (showend)
+{
+
+    <p>You got here :) - QR code test: @qrcode</p>
+
+}
+
+
+@if (transerror)
+{
+    <p><b>There was a transaction error: </b>@ViewData["TransError"]</p>
+}
+
+@if (showback)
+{
+
+    <p><a href="../..">Back you go</a></p>
+
+}

@@ -136,11 +136,13 @@ namespace dcbadge.Controllers
 
         public IActionResult Complete(string stripeEmail, string stripeToken)
         {
+            ViewData["Message"] = "If your seeing this, either you shouldnt be here, or something went wrong. Email us, or try again.";
+            ViewData["Back"] = 1;
+            ViewData["qrcode"] = "";
+            ViewData["ShowEnd"] = 0;
+            ViewData["TransError"] = "";
 
-            string chargeid = "";
-            int chargeammount = 0;
-            string chargestatus = "";
-            string customerid = "";
+            string qrcode = "";
 
 
             ViewBag.RequestCode = Request.Cookies["RequestCode"];
@@ -152,36 +154,46 @@ namespace dcbadge.Controllers
             var customers = new StripeCustomerService();
             var charges = new StripeChargeService();
 
-            try
+            if(!String.IsNullOrEmpty(stripeEmail) && !String.IsNullOrEmpty(stripeToken))
             {
-                var customer = customers.Create(new StripeCustomerCreateOptions
+                try
                 {
-                    Email = stripeEmail,
-                    SourceToken = stripeToken
-                });
+                    var customer = customers.Create(new StripeCustomerCreateOptions
+                    {
+                        Email = stripeEmail,
+                        SourceToken = stripeToken
+                    });
 
-                var charge = charges.Create(new StripeChargeCreateOptions
+                    var charge = charges.Create(new StripeChargeCreateOptions
+                    {
+                        Amount = price,
+                        Description = "QC-DCBadgeOrder",
+                        Currency = "usd",
+                        CustomerId = customer.Id
+
+                    });
+
+
+                   if (String.Compare(charge.Status, "succeeded", true) == 0)
+                    {
+                        ViewData["Back"] = 0;
+                        String guid = Guid.NewGuid().ToString();
+                        qrcode = sql.getID(RequestCode) + ";" + guid;
+                        sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
+                        ViewData["qrcode"] = qrcode;
+                        ViewData["ShowEnd"] = 1;
+                        ViewData["Message"] = "";
+
+                    }
+
+                    
+                }
+                catch (StripeException e)
                 {
-                    Amount = price,
-                    Description = "QC-DCBadgeOrder",
-                    Currency = "usd",
-                    CustomerId = customer.Id
-
-                });
-
-                chargeid = charge.Id;
-                chargeammount = charge.Amount;
-                chargestatus = charge.Status;
-                customerid = customer.Id;
-
+                    ViewData["TransError"] = e.Message;
+                    ViewData["Message"] = "Something went wrong... look at the error message, email us or try again.";
+                }
             }
-            catch (StripeException e)
-            {
-                ViewData["TransError"] = e.Message;
-            }
-
-
-            ViewData["Message"] = "CustomerID: " + customerid + " Email: " + stripeEmail + " ChargeID: " + chargeid + " " + chargeammount/100 + " " + chargestatus;
 
             return View();
         }

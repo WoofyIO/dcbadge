@@ -46,7 +46,8 @@ namespace dcbadge.Helpers
                         {
                             while (reader.Read())
                             {
-                                rtnvalue = Convert.ToBoolean(reader[0].ToString());
+                                int i = Convert.ToInt32(reader[0].ToString());
+                                rtnvalue = Convert.ToBoolean(i);
                             }
                         }
                     }
@@ -195,9 +196,9 @@ namespace dcbadge.Helpers
 
         }
 
-        public int getID(String code)
+        public string getID(String code)
         {
-            int rtnvalue = 0;
+            string rtnvalue = "";
 
             try
             {
@@ -222,15 +223,7 @@ namespace dcbadge.Helpers
                         {
                             while (reader.Read())
                             {
-                                string read = reader[0].ToString();
-                                if (!String.IsNullOrEmpty(read))
-                                {
-                                    rtnvalue = Convert.ToInt32(read);
-                                }
-                                else
-                                {
-                                    rtnvalue = 0;
-                                }
+                                rtnvalue = reader[0].ToString();
                             }
                         }
                     }
@@ -294,7 +287,7 @@ namespace dcbadge.Helpers
                 {
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
-                    sb.Append("UPDATE " + table + " SET codeused = 1, email = '" + email + "', custcode = '" + custcode + "', paycode = '" + paycode + "', qrcode = '" + qrcode + "' WHERE [requestcode] = '" + code + "';");
+                    sb.Append("UPDATE " + table + " SET codeused = 1, email = '" + email + "', custcode = '" + custcode + "', paycode = '" + paycode + "', qrcode = '" + qrcode + "', datepayed = CURRENT_TIMESTAMP WHERE [requestcode] = '" + code + "';");
                     String sql = sb.ToString();
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
