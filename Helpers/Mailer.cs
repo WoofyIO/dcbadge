@@ -17,7 +17,7 @@ namespace dcbadge.Helpers
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("Jake Visser", "jake@woofy.io"));
+            emailMessage.From.Add(new MailboxAddress("Queercon", "mailbox@queercon.org"));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = "Your Queercon Group Buy";
 
@@ -40,14 +40,15 @@ namespace dcbadge.Helpers
 
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                await client.ConnectAsync("smtp.woofy.io", 25, false);
+                await client.ConnectAsync("smtp-relay.gmail.com", 587, false);
+            
 
                 // Note: since we don't have an OAuth2 token, disable
                 // the XOAUTH2 authentication mechanism.
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
 
                 // Note: only needed if the SMTP server requires authentication
-                //client.Authenticate("test", "password");
+                client.Authenticate(Startup.guser, Startup.gpass);
 
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);

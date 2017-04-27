@@ -21,6 +21,8 @@ namespace dcbadge
         protected internal static string dbtable;
         protected internal static string dbname;
         protected internal static string uri;
+        protected internal static string guser;
+        protected internal static string gpass;
 
         public Startup(IHostingEnvironment env)
         {
@@ -59,6 +61,8 @@ namespace dcbadge
             dbtable = Configuration.GetSection("db")["dbtable"];
             dbname = Configuration.GetSection("db")["dbname"];
             uri = Configuration.GetSection("env")["uri"];
+            gpass = Configuration.GetSection("gmail")["gpass"];
+            guser = Configuration.GetSection("gmail")["guser"];
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
