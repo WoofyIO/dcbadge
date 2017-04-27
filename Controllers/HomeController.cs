@@ -144,6 +144,7 @@ namespace dcbadge.Controllers
             ViewData["Image"] = "";
             ViewData["badgenum"] = "";
             ViewData["Email"] = "";
+            ViewData["uri"] = Startup.uri;
 
             string qrcode = "";
 
@@ -224,6 +225,7 @@ namespace dcbadge.Controllers
 
             Helpers.QRGen qrcode64 = new Helpers.QRGen();
             byte[] qrcode = qrcode64.genQRCodeByte(qrtext);
+
             return File(qrcode, "image/png");
         }
     }

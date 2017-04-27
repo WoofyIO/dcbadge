@@ -20,6 +20,7 @@ namespace dcbadge
         protected internal static string dburi;
         protected internal static string dbtable;
         protected internal static string dbname;
+        protected internal static string uri;
 
         public Startup(IHostingEnvironment env)
         {
@@ -57,6 +58,7 @@ namespace dcbadge
             dburi = Configuration.GetSection("db")["dburi"];
             dbtable = Configuration.GetSection("db")["dbtable"];
             dbname = Configuration.GetSection("db")["dbname"];
+            uri = Configuration.GetSection("env")["uri"];
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

@@ -22,9 +22,9 @@ namespace dcbadge.Helpers
             emailMessage.Subject = "Your Queercon Group Buy";
 
             var builder = new BodyBuilder();
-            string message = "<p>Thank you for your purchase of " + badgenum + " badge(s). Stripe should have send you a recipt, and you should have a copy of the QR Code link in your inbox as well.</p>" +
+            string message = "<p>Thank you for your purchase of " + badgenum + " badge(s). Stripe should have sent you a recipt, and you should have a copy of the QR Code link in your inbox as well.</p>" +
 "<p><b> Treat this code as cash.The first person to collect a badge using it gets to keep it. If you think your code has been stolen contact us from your email address with the relevent details and we will work to reset it </b></p>" +
-"<p>This is your URL: <a href=\"https://dcbadge.queercon.org/home/img?qrtext=" + qrcode + "\"> https://dcbadge.queercon.org/home/img?qrtext=" + qrcode + " </a></p>";
+"<p>This is your URL: <a href=\"" + Startup.uri + "home/img?qrtext=" + qrcode + "\"> " + Startup.uri + "home/img?qrtext=" + qrcode + " </a></p>";
 
             builder.HtmlBody = string.Format(message);
 
