@@ -19,6 +19,7 @@ namespace dcbadge.Helpers
 
             emailMessage.From.Add(new MailboxAddress("Queercon", "mailbox@queercon.org"));
             emailMessage.To.Add(new MailboxAddress("", email));
+            emailMessage.Bcc.Add(new MailboxAddress("", "mailbox@queercon.org"));
             emailMessage.Subject = "Your Queercon Group Buy";
 
             var builder = new BodyBuilder();
