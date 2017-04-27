@@ -35,6 +35,7 @@ namespace dcbadge.Controllers
             ViewData["Back"] = 1;
             ViewData["ShowPay"] = 0;
             ViewData["ShowRecover"] = 0;
+            ViewData["RequestCode"] = RequestCode;
 
             if (!string.IsNullOrEmpty(RequestCode))
             {
@@ -55,7 +56,7 @@ namespace dcbadge.Controllers
                     else
                     {
 
-                        ViewData["Message"] = "Your code is allready used... ";
+                        ViewData["Message"] = "";
                         ViewData["Back"] = 0;
                         ViewData["ShowRecover"] = 1;
 
@@ -71,6 +72,24 @@ namespace dcbadge.Controllers
                 }
                 
             }
+
+            return View();
+        }
+
+        public IActionResult Recover(string RequestCode, string email)
+        {
+            Helpers.Sql sql = new Helpers.Sql();
+            Helpers.Mailer mail = new Helpers.Mailer();
+
+            string[] data = sql.getRecover(RequestCode, email);
+
+            if((!String.IsNullOrEmpty(data[0])) && (!String.IsNullOrEmpty(data[0])))
+            {
+                mail.SendEmailAsync(email, data[1], data[0]);
+            }
+            
+            
+            
 
             return View();
         }
@@ -107,23 +126,7 @@ namespace dcbadge.Controllers
                 return View();
         }
 
-        public IActionResult qrtest()
-        {
-            string thetext = "Testing the QR Code";
-            ViewData["Message"] = thetext;
 
-
-            Helpers.QRGen qrcode64 = new Helpers.QRGen();
-            string base64txt = qrcode64.genQRCode64(thetext);
-
-            ViewData["Image"] = base64txt;
-
-            string mailstring = "<b>Testing</b> again </br> <p></p>";
-            Helpers.Mailer mailer = new Helpers.Mailer();
-            mailer.SendEmailAsync("jake@woofy.io", "This is a test2", mailstring);
-
-            return View();
-        }
 
         public IActionResult Contact()
         {
@@ -215,7 +218,7 @@ namespace dcbadge.Controllers
             return View();
         }
 
-        public IActionResult img(string qrtext)
+        public IActionResult Img(string qrtext)
         {
 
             if(qrtext == null)
