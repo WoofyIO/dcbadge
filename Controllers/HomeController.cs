@@ -46,7 +46,7 @@ namespace dcbadge.Controllers
 
                     if(sql.codeUsed(RequestCode) == false)
                     {
-                        ViewData["Message"] = "Your code is good - lets pay";
+                        ViewData["Message"] = "Your code has been validated";
                         ViewData["Back"] = 0;
                         ViewData["ShowPay"] = 1;
                         ViewData["MaxBadges"] = sql.maxBadges(RequestCode);
@@ -114,8 +114,8 @@ namespace dcbadge.Controllers
             {
                 if (sql.verifyCode(RequestCode) == true)
                 {
-                    sql.updatePrice(RequestCode, BadgeNumber, (BadgeNumber * 270 * 100));
-                    ViewData["TotalPrice"] = (sql.getPrice(RequestCode) / 100);
+                    sql.updatePrice(RequestCode, BadgeNumber, (BadgeNumber * Startup.price));
+                    ViewData["TotalPrice"] = sql.getPrice(RequestCode);
                     ViewData["BadgeNumber"] = BadgeNumber;
                     ViewData["ShowPay"] = 1;
                     ViewData["Back"] = 0;
@@ -190,7 +190,7 @@ namespace dcbadge.Controllers
                         String guid = Guid.NewGuid().ToString();
                         qrcode = sql.getID(RequestCode) + ";" + guid;
                         sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
-                        int badgenum = charge.Amount / 100 / 270;
+                        int badgenum = charge.Amount / Startup.price;
                         ViewData["badgenum"] = badgenum;
                         ViewData["qrcode"] = qrcode;
                         ViewData["ShowEnd"] = 1;

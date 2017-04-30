@@ -23,6 +23,8 @@ namespace dcbadge
         protected internal static string uri;
         protected internal static string guser;
         protected internal static string gpass;
+        public static int price = 26810;
+        public static int fee = 810;
 
         public Startup(IHostingEnvironment env)
         {

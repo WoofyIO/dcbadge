@@ -23,8 +23,8 @@ namespace dcbadge.Helpers
             emailMessage.Subject = "Your Queercon Group Buy";
 
             var builder = new BodyBuilder();
-            string message = "<p>Thank you for your purchase of " + badgenum + " Defcon badge(s) as part of the Queercon group buy. Stripe should have sent you a recipt, and this is your QR Code for reference.</p>" +
-"<p><b> Treat this code as cash. The first person to collect a badge using it gets to keep it. If you think your code has been stolen contact us from your email address with the relevent details and we will work to reset it </b></p>" +
+            string message = "<p>Thank you for your order of " + badgenum + " Defcon badge(s) as part of the Queercon group buy. Stripe should have sent you a receipt, and this is your QR Code for reference.</p>" +
+"<p><b> Treat this code as cash. The first person to collect a badge using it gets to keep it. If you think your code has been stolen contact us from your email address with the relevant details and we will work to reset it </b></p>" +
 "<p>This is your URL: <a href=\"" + Startup.uri + "home/img?qrtext=" + qrcode + "\"> " + Startup.uri + "home/img?qrtext=" + qrcode + " </a></p>";
 
             builder.HtmlBody = string.Format(message);
