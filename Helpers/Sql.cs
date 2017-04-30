@@ -62,6 +62,49 @@ namespace dcbadge.Helpers
 
         }
 
+        public bool verifyQR(String code)
+        {
+            bool rtnvalue = false;
+
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = DataSource;
+                builder.UserID = UserID;
+                builder.Password = Password;
+                builder.InitialCatalog = db;
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("SELECT COUNT ([ID])");
+                    sb.Append("FROM " + table);
+                    sb.Append("WHERE [qrcode] = '" + code + "';");
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int i = Convert.ToInt32(reader[0].ToString());
+                                rtnvalue = Convert.ToBoolean(i);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return rtnvalue;
+
+        }
+
         public bool codeUsed(String code)
         {
             bool rtnvalue = true;
@@ -196,6 +239,52 @@ namespace dcbadge.Helpers
 
         }
 
+        public string[] getRecover(String code, String email)
+        {
+
+            string[] rtnvalue = new string[3];
+            rtnvalue[0] = "";
+            rtnvalue[1] = "";
+
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = DataSource;
+                builder.UserID = UserID;
+                builder.Password = Password;
+                builder.InitialCatalog = db;
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("SELECT [qantity], [qrcode]");
+                    sb.Append("FROM " + table);
+                    sb.Append("WHERE [requestcode] = '" + code + "' AND [email] = '" + email + "';");
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rtnvalue[0] = reader[0].ToString();
+                                rtnvalue[1] = reader[1].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return rtnvalue;
+
+        }
+ 
         public string getID(String code)
         {
             string rtnvalue = "";

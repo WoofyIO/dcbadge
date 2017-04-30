@@ -35,6 +35,7 @@ namespace dcbadge.Controllers
             ViewData["Back"] = 1;
             ViewData["ShowPay"] = 0;
             ViewData["ShowRecover"] = 0;
+            ViewData["RequestCode"] = RequestCode;
 
             if (!string.IsNullOrEmpty(RequestCode))
             {
@@ -45,7 +46,7 @@ namespace dcbadge.Controllers
 
                     if(sql.codeUsed(RequestCode) == false)
                     {
-                        ViewData["Message"] = "Your code is good - lets pay";
+                        ViewData["Message"] = "Your code has been validated";
                         ViewData["Back"] = 0;
                         ViewData["ShowPay"] = 1;
                         ViewData["MaxBadges"] = sql.maxBadges(RequestCode);
@@ -55,7 +56,7 @@ namespace dcbadge.Controllers
                     else
                     {
 
-                        ViewData["Message"] = "Your code is allready used... ";
+                        ViewData["Message"] = "";
                         ViewData["Back"] = 0;
                         ViewData["ShowRecover"] = 1;
 
@@ -71,6 +72,24 @@ namespace dcbadge.Controllers
                 }
                 
             }
+
+            return View();
+        }
+
+        public IActionResult Recover(string RequestCode, string email)
+        {
+            Helpers.Sql sql = new Helpers.Sql();
+            Helpers.Mailer mail = new Helpers.Mailer();
+
+            string[] data = sql.getRecover(RequestCode, email);
+
+            if((!String.IsNullOrEmpty(data[0])) && (!String.IsNullOrEmpty(data[0])))
+            {
+                mail.SendEmailAsync(email, data[1], data[0]);
+            }
+            
+            
+            
 
             return View();
         }
@@ -95,8 +114,8 @@ namespace dcbadge.Controllers
             {
                 if (sql.verifyCode(RequestCode) == true)
                 {
-                    sql.updatePrice(RequestCode, BadgeNumber, (BadgeNumber * 270 * 100));
-                    ViewData["TotalPrice"] = (sql.getPrice(RequestCode) / 100);
+                    sql.updatePrice(RequestCode, BadgeNumber, (BadgeNumber * Startup.price));
+                    ViewData["TotalPrice"] = sql.getPrice(RequestCode);
                     ViewData["BadgeNumber"] = BadgeNumber;
                     ViewData["ShowPay"] = 1;
                     ViewData["Back"] = 0;
@@ -107,23 +126,7 @@ namespace dcbadge.Controllers
                 return View();
         }
 
-        public IActionResult qrtest()
-        {
-            string thetext = "Testing the QR Code";
-            ViewData["Message"] = thetext;
 
-
-            Helpers.QRGen qrcode64 = new Helpers.QRGen();
-            string base64txt = qrcode64.genQRCode64(thetext);
-
-            ViewData["Image"] = base64txt;
-
-            string mailstring = "<b>Testing</b> again </br> <p></p>";
-            Helpers.Mailer mailer = new Helpers.Mailer();
-            mailer.SendEmailAsync("jake@woofy.io", "This is a test2", mailstring);
-
-            return View();
-        }
 
         public IActionResult Contact()
         {
@@ -144,6 +147,7 @@ namespace dcbadge.Controllers
             ViewData["Image"] = "";
             ViewData["badgenum"] = "";
             ViewData["Email"] = "";
+            ViewData["uri"] = Startup.uri;
 
             string qrcode = "";
 
@@ -186,7 +190,7 @@ namespace dcbadge.Controllers
                         String guid = Guid.NewGuid().ToString();
                         qrcode = sql.getID(RequestCode) + ";" + guid;
                         sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
-                        int badgenum = charge.Amount / 100 / 270;
+                        int badgenum = charge.Amount / Startup.price;
                         ViewData["badgenum"] = badgenum;
                         ViewData["qrcode"] = qrcode;
                         ViewData["ShowEnd"] = 1;
@@ -214,7 +218,7 @@ namespace dcbadge.Controllers
             return View();
         }
 
-        public IActionResult img(string qrtext)
+        public IActionResult Img(string qrtext)
         {
 
             if(qrtext == null)
@@ -224,6 +228,7 @@ namespace dcbadge.Controllers
 
             Helpers.QRGen qrcode64 = new Helpers.QRGen();
             byte[] qrcode = qrcode64.genQRCodeByte(qrtext);
+
             return File(qrcode, "image/png");
         }
     }

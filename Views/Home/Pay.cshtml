@@ -3,7 +3,7 @@
     ViewData["Title"] = "Pay";
     bool showback = Convert.ToBoolean(ViewData["Back"]);
     bool showpay = Convert.ToBoolean(ViewData["ShowPay"]);
-    int totalprice = Convert.ToInt32(ViewData["TotalPrice"]);
+    float totalprice = Convert.ToInt32(ViewData["TotalPrice"]);
 
 }
 
@@ -19,11 +19,11 @@
 
 @if (showpay)
 {
-    <p>Please click "Pay with Card" to complete the checkout using Stripe</p>
+    <p>Please click "Pay with Card" to complete the checkout using Stripe.</p>
 <form action="/Home/Complete" method="POST">
     <article>
-        <label>Amount: $@totalprice <br />
-        Number of Badges: @ViewData["BadgeNumber"] <br /></label>
+        <label>Amount: <b>$@(((totalprice) / (float)100).ToString("n2"))</b> <br />
+        Number of Badge(s): <b>@ViewData["BadgeNumber"]</b> <br /></label>
     </article>
     <script src="https://checkout.stripe.com/v2/checkout.js"
             class="stripe-button"
@@ -32,7 +32,7 @@
             data-name="Queercon, Inc"
             data-description="QC-DCBadgeOrder"
             data-zip-code="true"
-            data-amount="@(totalprice*100)">
+            data-amount="@(totalprice)">
     </script>
 </form>
     <p>Made a mistake? <a href="../../">Start Over</a> and select the correct amount</p>

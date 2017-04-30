@@ -3,10 +3,49 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - QC Defcon Badge System</title>
+    <title>@ViewData["Title"] - QC Defcon Group Buy</title>
 
+    <style>
+        div.main {
+            background-color: lightgrey;
+            width: 600px;
+            border: 5px solid black;
+            padding: 25px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        div.disclaim {
+            background-color: lightgrey;
+            width: 600px;
+            border: 5px solid black;
+            padding: 25px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        body {
+            background-color: Gainsboro;
+            align-content:center;
+        }
+        img.qr {
+            max-width: 100%;
+        }
+
+    </style>
 </head>
+
 <body>
-        @RenderBody()
+   <center><h1>QC Defcon Badge Group Buy</h1></center>
+    <p></p>
+        <div class="main">
+            @RenderBody()
+        </div>
+    <p></p>
+    <div class="disclaim">
+        This system is for us by invited individuals only. Codes are good for one time use and should be treated as cash. No guarantee of an electronic (or non-paper) badge is made - but all efforts will be made.
+    </div>
+    <center><img src="~/images/qc_equal_logo.png" /></center>
+    
+        
 </body>
 </html>

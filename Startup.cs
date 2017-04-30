@@ -20,6 +20,11 @@ namespace dcbadge
         protected internal static string dburi;
         protected internal static string dbtable;
         protected internal static string dbname;
+        protected internal static string uri;
+        protected internal static string guser;
+        protected internal static string gpass;
+        public static int price = 26810;
+        public static int fee = 810;
 
         public Startup(IHostingEnvironment env)
         {
@@ -57,6 +62,9 @@ namespace dcbadge
             dburi = Configuration.GetSection("db")["dburi"];
             dbtable = Configuration.GetSection("db")["dbtable"];
             dbname = Configuration.GetSection("db")["dbname"];
+            uri = Configuration.GetSection("env")["uri"];
+            gpass = Configuration.GetSection("gmail")["gpass"];
+            guser = Configuration.GetSection("gmail")["guser"];
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

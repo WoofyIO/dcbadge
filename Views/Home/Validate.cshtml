@@ -4,6 +4,9 @@
     bool showpay = Convert.ToBoolean(ViewData["ShowPay"]);
     bool showrecover = Convert.ToBoolean(ViewData["ShowRecover"]);
     int maxbadges = Convert.ToInt32(ViewData["MaxBadges"]);
+    float decPrice = (float)Startup.price / (float)100;
+    float fee = (float)Startup.fee / (float)100;
+
 }
 
 @ViewData["Message"]
@@ -11,12 +14,12 @@
 @if (showpay)
 {
 
-    <p>You can purchase up to @ViewData["MaxBadges"] badges. How many would you like? Badges cost $270 each including $10 to cover credit card and withdraw fees</p>
+    <p>You can order up to @ViewData["MaxBadges"] badges. How many would you like? Badges cost $@((decPrice).ToString("n2")) each including $@((fee).ToString("n2")) to cover stripe fees.</p>
 
 
         <form action="/Home/Pay" method="post">
             @for (int i = 1; i <= maxbadges; i++)
-                {<input type="radio" name="BadgeNumber" value="@i" /><b> @i  Badge(s) for a total of $@(i*270)</b> <br />}
+                {<input type="radio" name="BadgeNumber" value="@i" /><b> @i  Badge(s) for a total of $@(((float)i*decPrice).ToString("n2"))</b> <br />}
                     <br />
             <input type="submit" value="Submit">
         </form>
@@ -27,7 +30,14 @@
 @if (showrecover)
 {
 
-
+    <p>Your code has been previously used, please enter your email address that you used to pay, and code bellow, and we will resend you QR code to you.</p>
+    <form action="/Home/Recover" method="post">
+        Your Request Code:<br /><br />
+        <input type="text" name="requestcode" value="@ViewData["RequestCode"]" size="45"><br /><br />
+        Your Email:<br /><br />
+        <input type="text" name="email" value="" size="45"><br /><br />
+        <input type="submit" value="Submit">
+    </form>
 
 }
 
