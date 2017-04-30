@@ -164,7 +164,7 @@ namespace dcbadge.Controllers
             var customers = new StripeCustomerService();
             var charges = new StripeChargeService();
 
-            if(sql.verifyCode(RequestCode))
+            if(!sql.codeUsed(RequestCode))
             {
                 if (!String.IsNullOrEmpty(stripeEmail) && !String.IsNullOrEmpty(stripeToken))
                 {
