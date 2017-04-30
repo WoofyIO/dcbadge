@@ -30,7 +30,7 @@
 @if (showrecover)
 {
 
-    <p>Your code has been previously used, please enter your email address that you used to pay, and code bellow, and we will resend you QR code to you.</p>
+    <p>Your code has been previously used, please enter your email address that you used to pay, and code below, and we will resend your QR code to you.</p>
     <form action="/Home/Recover" method="post">
         Your Request Code:<br /><br />
         <input type="text" name="requestcode" value="@ViewData["RequestCode"]" size="45"><br /><br />

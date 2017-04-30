@@ -164,51 +164,56 @@ namespace dcbadge.Controllers
             var customers = new StripeCustomerService();
             var charges = new StripeChargeService();
 
-            if(!String.IsNullOrEmpty(stripeEmail) && !String.IsNullOrEmpty(stripeToken))
+            if(sql.verifyCode(RequestCode))
             {
-                try
+                if (!String.IsNullOrEmpty(stripeEmail) && !String.IsNullOrEmpty(stripeToken))
                 {
-                    var customer = customers.Create(new StripeCustomerCreateOptions
+                    try
                     {
-                        Email = stripeEmail,
-                        SourceToken = stripeToken
-                    });
+                        var customer = customers.Create(new StripeCustomerCreateOptions
+                        {
+                            Email = stripeEmail,
+                            SourceToken = stripeToken
+                        });
 
-                    var charge = charges.Create(new StripeChargeCreateOptions
-                    {
-                        Amount = price,
-                        Description = "QC-DCBadgeOrder",
-                        Currency = "usd",
-                        CustomerId = customer.Id
+                        var charge = charges.Create(new StripeChargeCreateOptions
+                        {
+                            Amount = price,
+                            Description = "QC-DCBadgeOrder",
+                            Currency = "usd",
+                            CustomerId = customer.Id
 
-                    });
+                        });
 
 
-                   if (String.Compare(charge.Status, "succeeded", true) == 0)
-                    {
-                        ViewData["Back"] = 0;
-                        String guid = Guid.NewGuid().ToString();
-                        qrcode = sql.getID(RequestCode) + ";" + guid;
-                        sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
-                        int badgenum = charge.Amount / Startup.price;
-                        ViewData["badgenum"] = badgenum;
-                        ViewData["qrcode"] = qrcode;
-                        ViewData["ShowEnd"] = 1;
-                        ViewData["Message"] = "";
-                        ViewData["Image"] = qr.genQRCode64(qrcode);
-                        ViewData["Email"] = stripeEmail;
-                        mail.SendEmailAsync(stripeEmail, qrcode, badgenum.ToString());
+                        if (String.Compare(charge.Status, "succeeded", true) == 0)
+                        {
+                            ViewData["Back"] = 0;
+                            String guid = Guid.NewGuid().ToString();
+                            qrcode = sql.getID(RequestCode) + ";" + guid;
+                            sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
+                            int badgenum = charge.Amount / Startup.price;
+                            ViewData["badgenum"] = badgenum;
+                            ViewData["qrcode"] = qrcode;
+                            ViewData["ShowEnd"] = 1;
+                            ViewData["Message"] = "";
+                            ViewData["Image"] = qr.genQRCode64(qrcode);
+                            ViewData["Email"] = stripeEmail;
+                            mail.SendEmailAsync(stripeEmail, qrcode, badgenum.ToString());
+
+                        }
+
 
                     }
-
-                    
-                }
-                catch (StripeException e)
-                {
-                    ViewData["TransError"] = e.Message;
-                    ViewData["Message"] = "Something went wrong... look at the error message, email us or try again.";
+                    catch (StripeException e)
+                    {
+                        ViewData["TransError"] = e.Message;
+                        ViewData["Message"] = "Something went wrong... look at the error message, email us or try again.";
+                    }
                 }
             }
+
+            
 
             return View();
         }
