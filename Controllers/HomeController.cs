@@ -231,10 +231,19 @@ namespace dcbadge.Controllers
                 qrtext = " ";
             }
 
-            Helpers.QRGen qrcode64 = new Helpers.QRGen();
-            byte[] qrcode = qrcode64.genQRCodeByte(qrtext);
+            ViewData["Back"] = 1;
 
-            return File(qrcode, "image/png");
+            Helpers.Sql sql = new Helpers.Sql();
+            if (sql.verifyQR(qrtext))
+            {
+                ViewData["Back"] = 0;
+            }
+
+            Helpers.QRGen qr = new Helpers.QRGen();
+            ViewData["qrcode"] = qrtext;
+            ViewData["Image"] = qr.genQRCode64(qrtext);
+
+            return View();
         }
     }
 }

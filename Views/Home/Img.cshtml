@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Complete";
+    string qrcode = ViewData["qrcode"].ToString();
+    bool showback = Convert.ToBoolean(ViewData["Back"]);
+
+}
+
+
+@if (!showback)
+{
+    <p>Thank you for your order of Defcon badge(s) as part of the QC group buy.</p>
+    <p><b>Treat this code as cash. The first person to collect a badge using it gets to keep it. If you think your code has been stolen contact us from your email address with the relevant details and we will work to reset it.</b></p>
+    <p>This is your URL: <a href="@ViewData["uri"]home/img?qrtext=@qrcode">@ViewData["uri"]home/img?qrtext=@qrcode</a></p>
+    <p><center><img alt="Embedded Image" src="data:image/png;base64,@ViewData["Image"]" class="qr" /></center></p>
+
+}
+
+@if (showback)
+{
+    <b>Your code was bad</b>
+}
