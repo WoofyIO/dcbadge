@@ -105,6 +105,56 @@ namespace dcbadge.Helpers
 
         }
 
+        public int badgesQR(String code)
+        {
+            int rtnvalue = 0;
+
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = DataSource;
+                builder.UserID = UserID;
+                builder.Password = Password;
+                builder.InitialCatalog = db;
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("SELECT [Qantity]");
+                    sb.Append("FROM " + table);
+                    sb.Append("WHERE [qrcode] = '" + code + "';");
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string read = reader[0].ToString();
+                                if (!String.IsNullOrEmpty(read))
+                                {
+                                    rtnvalue = Convert.ToInt32(read);
+                                }
+                                else
+                                {
+                                    rtnvalue = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return rtnvalue;
+
+        }
+
         public bool codeUsed(String code)
         {
             bool rtnvalue = true;

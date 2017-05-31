@@ -127,16 +127,6 @@ namespace dcbadge.Controllers
         }
 
 
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            Response.Cookies.Append("isSet", "true");
-
-            return View();
-        }
-
         public IActionResult Complete(string stripeEmail, string stripeToken)
         {
             ViewData["Message"] = "If your seeing this, either you shouldnt be here, or something went wrong. Email us, or try again.";
@@ -252,16 +242,80 @@ namespace dcbadge.Controllers
 
             ViewData["Message"] = "";
 
-            ViewBag.ClaimCode = Request.Cookies["ClaimCode"];
+            ViewBag.ClaimAdminCode = Request.Cookies["ClaimAdminCode"];
 
-            if (!string.IsNullOrEmpty(ViewBag.ClaimCode))
+            if (!string.IsNullOrEmpty(ViewBag.ClaimAdminCode))
             {
-                ViewData["ClaimCode"] = ViewBag.ClaimCode;
+                ViewData["ClaimAdminCode"] = ViewBag.ClaimAdminCode;
             }
             else
             {
-                ViewData["ClaimCode"] = "";
+                ViewData["ClaimAdminCode"] = "";
             }
+
+            return View();
+        }
+
+        public IActionResult Claim2(string claimadmincode, string claimcode, string removeclaimcode)
+        {
+            Helpers.Sql sql = new Helpers.Sql();
+            ViewData["Message"] = "";
+            ViewData["Back"] = 1;
+            ViewData["ShowClaim"] = 0;
+            ViewData["CollectNumber"] = 0;
+            ViewData["ShowValidate"] = 0;
+
+
+            if (!string.IsNullOrEmpty(claimadmincode))
+            {
+                Response.Cookies.Append("ClaimAdminCode", claimadmincode);
+
+            }
+            else
+            {
+                ViewBag.ClaimAdminCode = Request.Cookies["ClaimAdminCode"];
+                claimadmincode = ViewBag.ClaimAdminCode;
+            }
+
+            ViewBag.ClaimAdminCode = Request.Cookies["ClaimAdminCode"];
+
+            
+
+            if (String.Compare("handler", claimadmincode, true) == 0)
+            {
+                ViewData["Back"] = 0;
+                ViewData["Message"] = "Admin Logged In";
+
+                if (string.IsNullOrEmpty(claimcode))
+                {
+
+                    ViewData["ShowValidate"] = 1;
+                    
+
+                }
+                else
+                {
+                    int collectnumber = 0;
+                    ViewData["Message"] = claimcode;
+                    collectnumber = sql.badgesQR(claimcode);
+                    ViewData["CollectNumber"] = collectnumber;
+                    if ( collectnumber > 0 )
+                    {
+                        ViewData["ShowClaim"] = 1;
+                        ViewData["ClaimCode"] = claimcode;
+                    }
+                    else
+                    {
+                        ViewData["Message"] = "Invalid or used Code";
+                        ViewData["ShowValidate"] = 1;
+                    }
+                    
+                }
+
+
+
+            }
+
 
             return View();
         }
