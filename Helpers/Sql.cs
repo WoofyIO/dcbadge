@@ -80,7 +80,7 @@ namespace dcbadge.Helpers
                     StringBuilder sb = new StringBuilder();
                     sb.Append("SELECT COUNT ([ID])");
                     sb.Append("FROM " + table);
-                    sb.Append("WHERE [qrcode] = '" + code + "';");
+                    sb.Append("WHERE [qrcode] = '" + code + "' AND [collected] = 0;");
                     String sql = sb.ToString();
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
