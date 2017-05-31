@@ -286,6 +286,12 @@ namespace dcbadge.Controllers
                 ViewData["Back"] = 0;
                 ViewData["Message"] = "Admin Logged In";
 
+                if(!string.IsNullOrEmpty(removeclaimcode))
+                {
+                    sql.updateCollected(removeclaimcode);
+                    ViewData["Message"] = "Code claimed";
+                }
+
                 if (string.IsNullOrEmpty(claimcode))
                 {
 
