@@ -242,6 +242,7 @@ namespace dcbadge.Controllers
             Helpers.QRGen qr = new Helpers.QRGen();
             ViewData["qrcode"] = qrtext;
             ViewData["Image"] = qr.genQRCode64(qrtext);
+            ViewData["uri"] = Startup.uri;
 
             return View();
         }
