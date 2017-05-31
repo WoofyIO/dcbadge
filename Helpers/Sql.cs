@@ -426,7 +426,7 @@ namespace dcbadge.Helpers
                 {
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
-                    sb.Append("UPDATE " + table + " SET [collected] = 1 WHERE [qrcode] = '" + code + "';");
+                    sb.Append("UPDATE " + table + " SET collected = 1, datecollect = CURRENT_TIMESTAMP WHERE [qrcode] = '" + code + "';");
                     String sql = sb.ToString();
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
