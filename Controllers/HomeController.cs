@@ -246,5 +246,24 @@ namespace dcbadge.Controllers
 
             return View();
         }
+
+        public IActionResult Claim()
+        {
+
+            ViewData["Message"] = "";
+
+            ViewBag.ClaimCode = Request.Cookies["ClaimCode"];
+
+            if (!string.IsNullOrEmpty(ViewBag.ClaimCode))
+            {
+                ViewData["ClaimCode"] = ViewBag.ClaimCode;
+            }
+            else
+            {
+                ViewData["ClaimCode"] = "";
+            }
+
+            return View();
+        }
     }
 }
