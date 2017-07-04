@@ -23,7 +23,7 @@
     <p>Thank you for your order of @ViewData["badgenum"] Defcon badge(s) as part of the QC group buy. Stripe should have sent you a receipt, and you should have a copy of the QR Code link in your inbox as well. Your email address  @ViewData["Email"] can be used to retrieve this code again if need be.</p>
     <p><b>Treat this code as cash. The first person to collect a badge using it gets to keep it. If you think your code has been stolen contact us from your email address with the relevant details and we will work to reset it.</b></p>
     <p>This is your URL: <a href="@ViewData["uri"]home/img?qrtext=@qrcode">@ViewData["uri"]home/img?qrtext=@qrcode</a></p>
-    <p><img alt="Embedded Image" src="data:image/png;base64,@ViewData["Image"]" class="qr"/></p>
+    <p><center><img alt="Embedded Image" src="data:image/png;base64,@ViewData["Image"]" class="qr" /></center></p>
 
 }
 

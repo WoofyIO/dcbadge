@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Admin Claim";
+}
+
+
+<p>@ViewData["Message"]</p>
+
+
+<form action="/Home/Claim2" method="post">
+    Admin Code:<br /><br />
+    <input type="text" name="claimadmincode" value="@ViewData["ClaimAdminCode"]" size="45"><br /><br />
+    <input type="submit" value="Submit">
+</form> 
