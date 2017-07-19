@@ -127,16 +127,6 @@ namespace dcbadge.Controllers
         }
 
 
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            Response.Cookies.Append("isSet", "true");
-
-            return View();
-        }
-
         public IActionResult Complete(string stripeEmail, string stripeToken)
         {
             ViewData["Message"] = "If your seeing this, either you shouldnt be here, or something went wrong. Email us, or try again.";
@@ -164,51 +154,56 @@ namespace dcbadge.Controllers
             var customers = new StripeCustomerService();
             var charges = new StripeChargeService();
 
-            if(!String.IsNullOrEmpty(stripeEmail) && !String.IsNullOrEmpty(stripeToken))
+            if(!sql.codeUsed(RequestCode))
             {
-                try
+                if (!String.IsNullOrEmpty(stripeEmail) && !String.IsNullOrEmpty(stripeToken))
                 {
-                    var customer = customers.Create(new StripeCustomerCreateOptions
+                    try
                     {
-                        Email = stripeEmail,
-                        SourceToken = stripeToken
-                    });
+                        var customer = customers.Create(new StripeCustomerCreateOptions
+                        {
+                            Email = stripeEmail,
+                            SourceToken = stripeToken
+                        });
 
-                    var charge = charges.Create(new StripeChargeCreateOptions
-                    {
-                        Amount = price,
-                        Description = "QC-DCBadgeOrder",
-                        Currency = "usd",
-                        CustomerId = customer.Id
+                        var charge = charges.Create(new StripeChargeCreateOptions
+                        {
+                            Amount = price,
+                            Description = "QC-DCBadgeOrder",
+                            Currency = "usd",
+                            CustomerId = customer.Id
 
-                    });
+                        });
 
 
-                   if (String.Compare(charge.Status, "succeeded", true) == 0)
-                    {
-                        ViewData["Back"] = 0;
-                        String guid = Guid.NewGuid().ToString();
-                        qrcode = sql.getID(RequestCode) + ";" + guid;
-                        sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
-                        int badgenum = charge.Amount / Startup.price;
-                        ViewData["badgenum"] = badgenum;
-                        ViewData["qrcode"] = qrcode;
-                        ViewData["ShowEnd"] = 1;
-                        ViewData["Message"] = "";
-                        ViewData["Image"] = qr.genQRCode64(qrcode);
-                        ViewData["Email"] = stripeEmail;
-                        mail.SendEmailAsync(stripeEmail, qrcode, badgenum.ToString());
+                        if (String.Compare(charge.Status, "succeeded", true) == 0)
+                        {
+                            ViewData["Back"] = 0;
+                            String guid = Guid.NewGuid().ToString();
+                            qrcode = sql.getID(RequestCode) + ";" + guid;
+                            sql.updateSale(RequestCode, stripeEmail, customer.Id, charge.Id, qrcode);
+                            int badgenum = charge.Amount / Startup.price;
+                            ViewData["badgenum"] = badgenum;
+                            ViewData["qrcode"] = qrcode;
+                            ViewData["ShowEnd"] = 1;
+                            ViewData["Message"] = "";
+                            ViewData["Image"] = qr.genQRCode64(qrcode);
+                            ViewData["Email"] = stripeEmail;
+                            mail.SendEmailAsync(stripeEmail, qrcode, badgenum.ToString());
+
+                        }
+
 
                     }
-
-                    
-                }
-                catch (StripeException e)
-                {
-                    ViewData["TransError"] = e.Message;
-                    ViewData["Message"] = "Something went wrong... look at the error message, email us or try again.";
+                    catch (StripeException e)
+                    {
+                        ViewData["TransError"] = e.Message;
+                        ViewData["Message"] = "Something went wrong... look at the error message, email us or try again.";
+                    }
                 }
             }
+
+            
 
             return View();
         }
@@ -226,10 +221,109 @@ namespace dcbadge.Controllers
                 qrtext = " ";
             }
 
-            Helpers.QRGen qrcode64 = new Helpers.QRGen();
-            byte[] qrcode = qrcode64.genQRCodeByte(qrtext);
+            ViewData["Back"] = 1;
 
-            return File(qrcode, "image/png");
+            Helpers.Sql sql = new Helpers.Sql();
+            if (sql.verifyQR(qrtext))
+            {
+                ViewData["Back"] = 0;
+            }
+
+            Helpers.QRGen qr = new Helpers.QRGen();
+            ViewData["qrcode"] = qrtext;
+            ViewData["Image"] = qr.genQRCode64(qrtext);
+            ViewData["uri"] = Startup.uri;
+
+            return View();
+        }
+
+        public IActionResult Claim()
+        {
+
+            ViewData["Message"] = "";
+
+            ViewBag.ClaimAdminCode = Request.Cookies["ClaimAdminCode"];
+
+            if (!string.IsNullOrEmpty(ViewBag.ClaimAdminCode))
+            {
+                ViewData["ClaimAdminCode"] = ViewBag.ClaimAdminCode;
+            }
+            else
+            {
+                ViewData["ClaimAdminCode"] = "";
+            }
+
+            return View();
+        }
+
+        public IActionResult Claim2(string claimadmincode, string claimcode, string removeclaimcode)
+        {
+            Helpers.Sql sql = new Helpers.Sql();
+            ViewData["Message"] = "";
+            ViewData["Back"] = 1;
+            ViewData["ShowClaim"] = 0;
+            ViewData["CollectNumber"] = 0;
+            ViewData["ShowValidate"] = 0;
+
+
+            if (!string.IsNullOrEmpty(claimadmincode))
+            {
+                Response.Cookies.Append("ClaimAdminCode", claimadmincode);
+
+            }
+            else
+            {
+                ViewBag.ClaimAdminCode = Request.Cookies["ClaimAdminCode"];
+                claimadmincode = ViewBag.ClaimAdminCode;
+            }
+
+            ViewBag.ClaimAdminCode = Request.Cookies["ClaimAdminCode"];
+
+            
+
+            if (String.Compare("handler", claimadmincode, true) == 0)
+            {
+                ViewData["Back"] = 0;
+                ViewData["Message"] = "Admin Logged In";
+
+                if(!string.IsNullOrEmpty(removeclaimcode))
+                {
+                    sql.updateCollected(removeclaimcode);
+                    ViewData["Message"] = "Code claimed";
+                }
+
+                if (string.IsNullOrEmpty(claimcode))
+                {
+
+                    ViewData["ShowValidate"] = 1;
+                    
+
+                }
+                else
+                {
+                    int collectnumber = 0;
+                    ViewData["Message"] = claimcode;
+                    collectnumber = sql.badgesQR(claimcode);
+                    ViewData["CollectNumber"] = collectnumber;
+                    if ( collectnumber > 0 )
+                    {
+                        ViewData["ShowClaim"] = 1;
+                        ViewData["ClaimCode"] = claimcode;
+                    }
+                    else
+                    {
+                        ViewData["Message"] = "Invalid or used Code";
+                        ViewData["ShowValidate"] = 1;
+                    }
+                    
+                }
+
+
+
+            }
+
+
+            return View();
         }
     }
 }

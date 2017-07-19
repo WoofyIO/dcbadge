@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Admin Claim";
+    bool showback = Convert.ToBoolean(ViewData["Back"]);
+    bool showvalidate = Convert.ToBoolean(ViewData["ShowValidate"]);
+    bool showclaim = Convert.ToBoolean(ViewData["ShowClaim"]);
+}
+
+@ViewData["Message"]
+
+@if (showvalidate)
+{
+
+    <form action="/Home/Claim2" method="post">
+        Code to redeem:<br /><br />
+        <input type="text" name="claimcode" value="" size="60"><br /><br />
+        <input type="submit" value="Submit">
+    </form>
+
+
+}
+
+@if (showclaim)
+{
+
+    <center><p>Give the user: <b>@ViewData["CollectNumber"]</b> badges</p></center>
+    <form action="/Home/Claim2" method="post">
+        <input type="hidden" name="removeclaimcode" value="@ViewData["ClaimCode"]"><br /><br />
+        <input type="submit" value="Collected">
+    </form>
+
+}
+
+@if (showback)
+{
+
+    <p><a href="../..">Back you go</a></p>
+
+}
+
+
+@{
+}

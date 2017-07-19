@@ -80,7 +80,7 @@ namespace dcbadge.Helpers
                     StringBuilder sb = new StringBuilder();
                     sb.Append("SELECT COUNT ([ID])");
                     sb.Append("FROM " + table);
-                    sb.Append("WHERE [qrcode] = '" + code + "';");
+                    sb.Append("WHERE [qrcode] = '" + code + "' AND [collected] = 0;");
                     String sql = sb.ToString();
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
@@ -91,6 +91,56 @@ namespace dcbadge.Helpers
                             {
                                 int i = Convert.ToInt32(reader[0].ToString());
                                 rtnvalue = Convert.ToBoolean(i);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return rtnvalue;
+
+        }
+
+        public int badgesQR(String code)
+        {
+            int rtnvalue = 0;
+
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = DataSource;
+                builder.UserID = UserID;
+                builder.Password = Password;
+                builder.InitialCatalog = db;
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("SELECT [Qantity]");
+                    sb.Append("FROM " + table);
+                    sb.Append("WHERE [qrcode] = '" + code + "' AND [collected] = 0;");
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string read = reader[0].ToString();
+                                if (!String.IsNullOrEmpty(read))
+                                {
+                                    rtnvalue = Convert.ToInt32(read);
+                                }
+                                else
+                                {
+                                    rtnvalue = 0;
+                                }
                             }
                         }
                     }
@@ -343,6 +393,40 @@ namespace dcbadge.Helpers
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
                     sb.Append("UPDATE " + table + " SET Price = '" + price + "', Qantity = '" + qantity + "' WHERE [requestcode] = '" + code + "';");
+                    String sql = sb.ToString();
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+
+
+        }
+
+        public void updateCollected(String code)
+        {
+
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = DataSource;
+                builder.UserID = UserID;
+                builder.Password = Password;
+                builder.InitialCatalog = db;
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("UPDATE " + table + " SET collected = 1, datecollect = CURRENT_TIMESTAMP WHERE [qrcode] = '" + code + "';");
                     String sql = sb.ToString();
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
