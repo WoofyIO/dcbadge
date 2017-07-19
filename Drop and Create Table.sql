@@ -2,7 +2,7 @@ USE [dcbadge]
 GO
 
 /****** Object:  Table [dbo].[Codes]    Script Date: 4/26/2017 10:45:16 AM ******/
-DROP TABLE [dbo].[Codesdev]
+DROP TABLE [dbo].[Codes]
 GO
 
 /****** Object:  Table [dbo].[Codes]    Script Date: 4/26/2017 10:45:17 AM ******/
@@ -12,7 +12,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[Codesdev](
+CREATE TABLE [dbo].[Codes](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[requestcode] [varchar](255) UNIQUE NOT NULL,
 	[maxqantity] [int] DEFAULT '2' NOT NULL,

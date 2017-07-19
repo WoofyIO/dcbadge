@@ -1,14 +1,14 @@
 USE [dcbadge]
 GO
 
-WHILE (SELECT COUNT(ID) FROM Codesdev) < 50 
+WHILE (SELECT COUNT(ID) FROM Codes) < 100 
 BEGIN  
-INSERT INTO [dbo].[Codesdev]
-           ([requestcode])
+INSERT INTO [dbo].[Codes]
+           ([maxqantity],[requestcode])
      VALUES
-           (NEWID()) 
+           ('2',NEWID()) 
 END  
 
-SELECT requestcode FROM Codesdev
+SELECT requestcode FROM Codes WHERE [maxqantity] = '2'
 
 GO
